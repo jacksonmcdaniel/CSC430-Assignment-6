@@ -37,7 +37,17 @@ defmodule Functions do
 			%IdC{value: n} -> lookup(n, env)
 			%NumC{value: n} -> n
 			%StringC{value: n} -> n
-			%IfC{if: if, then: then, otherwise: otherwise} -> if
+			%IfC{if: if, then: then, otherwise: otherwise} -> 
+				try do
+					flag = interp(if, env) 
+					cond do
+						flag == true -> interp(then, env)
+						flag == false -> interp(otherwise, env)
+						true -> throw(if)
+					end 
+				catch 
+					x -> "Given if clause is not evaluating to a boolean."
+				end
 			%AppC{fun: f, args: a} -> output = interp(f, env) 
 				case output do
 
@@ -83,6 +93,11 @@ x = %AppC{fun: %IdC{value: :equal?}, args: [%NumC{value: 4}, %NumC{value: 5}]}
 y = %AppC{fun: %IdC{value: :<=}, args: [%NumC{value: 4}, %NumC{value: 5}]}
 z = %AppC{fun: %IdC{value: :<=}, args: [%NumC{value: 5}, %NumC{value: 4}, %NumC{value: 6}]}
 
+test1 = %IfC{if: %AppC{fun: %IdC{value: :equal?}, args: [%NumC{value: 4}, %NumC{value: 4}]}, then: %NumC{value: 4}, otherwise: %NumC{value: 5}}
+test2 = %IfC{if: %AppC{fun: %IdC{value: :equal?}, args: [%NumC{value: 5}, %NumC{value: 4}]}, then: %NumC{value: 4}, otherwise: %NumC{value: 5}}
+test3 = %IfC{if: %NumC{value: 3}, then: %NumC{value: 4}, otherwise: %NumC{value: 5}}
+
+
 
 topenv = [%Binding{sym: :+, val: %PrimV{op: :+}}, 
 			%Binding{sym: :-, val: %PrimV{op: :-}}, 
@@ -94,6 +109,6 @@ topenv = [%Binding{sym: :+, val: %PrimV{op: :+}},
 			%Binding{sym: :false, val: false}
 		]
 Functions.lookup(:*, topenv) 
-Functions.interp(z, topenv)
+Functions.interp(test2, topenv)
 
 
