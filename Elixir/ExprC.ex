@@ -86,6 +86,10 @@ defmodule Functions do
 			:equal? -> left == right
 		end
 	end
+
+	def extendEnv(bind, env) do
+		[bind | env]
+	end
 end
 
 v = %AppC{fun: %IdC{value: :equal?}, args: [%NumC{value: 4}, %NumC{value: 4}]}
