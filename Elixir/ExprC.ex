@@ -40,7 +40,17 @@ defmodule Functions do
 			%IfC{if: if, then: then, otherwise: otherwise} -> if
 			%AppC{fun: f, args: a} -> output = interp(f, env) 
 				case output do
-					%PrimV{op: op} -> primHandler(op, interp(Enum.at(a, 0), env), interp(Enum.at(a,1), env))
+
+					%PrimV{op: op} -> 
+						try do
+							if length(a) > 2 do
+								throw(length(a))
+							else
+								primHandler(op, interp(Enum.at(a, 0), env), interp(Enum.at(a,1), env))
+							end
+						catch
+							x -> "More than two arguments given for a primary operation. You have #{x} Arguments."
+						end
 				end
 
 
@@ -71,7 +81,7 @@ end
 v = %AppC{fun: %IdC{value: :equal?}, args: [%NumC{value: 4}, %NumC{value: 4}]}
 x = %AppC{fun: %IdC{value: :equal?}, args: [%NumC{value: 4}, %NumC{value: 5}]}
 y = %AppC{fun: %IdC{value: :<=}, args: [%NumC{value: 4}, %NumC{value: 5}]}
-z = %AppC{fun: %IdC{value: :<=}, args: [%NumC{value: 5}, %NumC{value: 4}]}
+z = %AppC{fun: %IdC{value: :<=}, args: [%NumC{value: 5}, %NumC{value: 4}, %NumC{value: 6}]}
 
 
 topenv = [%Binding{sym: :+, val: %PrimV{op: :+}}, 
@@ -84,5 +94,6 @@ topenv = [%Binding{sym: :+, val: %PrimV{op: :+}},
 			%Binding{sym: :false, val: false}
 		]
 Functions.lookup(:*, topenv) 
+Functions.interp(z, topenv)
 
 
