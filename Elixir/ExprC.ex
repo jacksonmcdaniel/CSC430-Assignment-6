@@ -63,13 +63,16 @@ defmodule Functions do
 			:/ -> left / right
 			:* -> left * right
 			:<= -> left <= right
-			:equal? -> match?(left, right)
+			:equal? -> left == right
 		end
 	end
 end
 
+v = %AppC{fun: %IdC{value: :equal?}, args: [%NumC{value: 4}, %NumC{value: 4}]}
+x = %AppC{fun: %IdC{value: :equal?}, args: [%NumC{value: 4}, %NumC{value: 5}]}
+y = %AppC{fun: %IdC{value: :<=}, args: [%NumC{value: 4}, %NumC{value: 5}]}
+z = %AppC{fun: %IdC{value: :<=}, args: [%NumC{value: 5}, %NumC{value: 4}]}
 
-x = %AppC{fun: %IdC{value: :-}, args: [%NumC{value: 4}, %NumC{value: 5}]}
 
 topenv = [%Binding{sym: :+, val: %PrimV{op: :+}}, 
 			%Binding{sym: :-, val: %PrimV{op: :-}}, 
